@@ -1,0 +1,11 @@
+<ul>
+	<li><a href="?page=accueil">Accueil</a></li>
+	<li><a href="?page=membres">Membres</a></li>
+	<li><a href="?page=profile">Mon profil</a></li>
+
+	<?php if ($this->session['rights'] == 9): ?>
+	<li><a href="#">ADMINISTRATION</a></li>
+	<?php endif; ?>
+
+	<li><a href="?page=deconnection">Deconnection</a></li>
+</ul>

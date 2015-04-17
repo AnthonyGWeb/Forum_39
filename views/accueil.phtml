@@ -1,0 +1,32 @@
+<h1><?php echo $title; ?></h1>
+
+<h2>Catégories :</h2>
+
+<div class="list-categorie">
+	<?php foreach ($categories as $categorie): ?>
+		
+		<div class="clearfix">
+			<h3><?php echo $categorie['titre']; ?></h3>
+			<span> Actuellement : 
+			<?php echo $stats['numberTopic'][$categorie['id']] ?> 
+			sujet(s)</span>
+		</div>
+		
+		<span><a href="?page=new_topic&amp;categorieId=<?php echo $categorie['id']; ?>">Créer un nouveau sujet</a></span>
+
+		<ul>
+			<?php foreach ($topics as $topic): ?>
+				<?php if ($topic['categorie_id'] == $categorie['id']) : ?>
+					<li>
+						<a href="?page=topic&amp;topicId=<?php echo $topic['id']; ?>">
+						<?php echo $topic['titre']; ?>
+						</a>
+
+						<span><?php echo $stats['numberMessage'][$topic['id']] ?> message(s)</span>
+					</li>
+				<?php endif; ?>
+			<?php endforeach; ?>
+		</ul>
+
+	<?php endforeach; ?>
+</div>

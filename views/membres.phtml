@@ -1,0 +1,28 @@
+<div class="membres">
+	<table>
+		<thead>
+			
+		</thead>
+
+		<tbody>
+			<?php foreach ($membres as $value): ?>
+				<tr>
+					<td>
+						<img src="img/<?php echo $value['avatar'] ?>">
+					</td>
+					<td><?php echo $value['pseudo'] ?></td>
+					<td><?php echo $value['email'] ?></td>
+					<td>
+						<?php if ($value['rights'] == 9): ?>
+							<span class="s-admin">Super-Admin</span> Et ouai la classe :p
+						<?php elseif($value['rights'] == 5): ?>
+							<span class="moderateur">Modérateur</span>
+						<?php elseif($value['rights'] == 0): ?>
+							<span class="">Utilisateur</span>
+						<?php endif; ?>
+					</td>
+				</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+</div>
