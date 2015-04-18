@@ -1,0 +1,102 @@
+<div class="topic">
+	<div>
+		<ul>
+			<li><a href="#reply">Repondre</a></li>
+			<li><a href="#">Dernier message</a></li>
+			<li><a href="#">Supprimer le topic</a></li>
+		</ul>
+	</div>
+
+	<div class="sujet sujet-principal">
+		<h3>Sujet : <?php echo $topic['titre']; ?></h3>
+		<div class="clearfix">
+			<div class="info-user">
+				
+				<img src="img/<?php echo $topic['avatar'] ?>" alt="">
+				
+				<p><?php echo $topic['pseudo']; ?></p>
+				
+				<p>Ecrit le : <?php echo $topic['topics_date_create']; ?></p>
+				<p><a href="#">Voir le profil</a></p>
+
+				<p>
+					<?php if ($topic['rights'] == 9): ?>
+						<span class="s-admin">Super-Admin</span> Et ouai la classe :p
+					<?php elseif($topic['rights'] == 5): ?>
+						<span class="moderateur">Modérateur</span>
+					<?php endif; ?>
+				</p>
+			</div>
+
+			<div class="body-msg">
+				<div>
+					<p><?php echo $topic['message']; ?></p>
+				</div>
+
+				
+			</div>
+		</div>
+
+		<div class="modif-bar">
+			<ul>
+				<?php if ($topic['user_id'] == $this->session['id']  || $this->session['rights'] >= 5): ?>
+					<li><a href="#">Editer</a></li>
+					<li><a href="#">Supprimer</a></li>
+				<?php else: ?>
+					<li><a href="#">Signaler un contenu indésirable</a></li>
+				<?php endif; ?>
+			</ul>
+		</div>
+	</div>
+
+	<div>
+		<p>PUBLICITE QUI ME RAPPPORTTTEEE DES MILLIARDS PAR AN <a href="#">CLICK PUTIN</a></p>
+	</div>
+
+	<?php foreach ($messages as $key => $value): ?>
+		<div class="sujet">
+			<div class="clearfix">
+				<div class="info-user">
+					
+					<img src="img/<?php echo $value['avatar'] ?>" alt="">
+					
+					<p><?php echo $value['pseudo']; ?></p>
+					
+					<p>Ecrit le : <?php echo $value['date_create']; ?></p>
+					<p>
+						<?php if ($value['rights'] == 9): ?>
+							<span class="s-admin">Super-Admin</span> Et ouai la classe :p
+						<?php elseif($value['rights'] == 5): ?>
+							<span class="moderateur">Modérateur</span>
+						<?php endif; ?>
+					</p>
+
+					<p><a href="#">Voir le profil</a></p>
+				</div>
+
+				<div class="body-msg">
+					<div>
+						<p><?php echo $value['msg']; ?></p>
+					</div>
+
+					
+				</div>
+			</div>
+
+			<div class="modif-bar">
+				<ul>
+					<?php if ($value['user_id'] == $this->session['id'] || $this->session['rights'] >= 5): ?>
+						<li><a href="#">Editer</a></li>
+						<li><a href="?page=handlingDeleteMessage&amp;topicId=<?php echo $this->get['topicId']; ?>&amp;messageId=<?php echo $value['message_id'] ?>">Supprimer (*Attention pas de confirmation)</a></li>
+					<?php else: ?>
+						<li><a href="#">Signaler un contenu</a></li>
+					<?php endif; ?>
+				</ul>
+			</div>
+		</div>
+	<?php endforeach; ?>
+
+	<?php include __ROOT_DIR__ . '/views/form_reply.phtml'; ?>
+
+	<a href="#">Retour en haut</a>
+</div>

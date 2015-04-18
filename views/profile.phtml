@@ -1,0 +1,45 @@
+<div class="profile">
+	<div>
+		<img src="img/<?php echo $this->session['avatar']; ?>" alt="">
+		<form action="">
+			<fieldset>
+				<p>
+					<input type="file" name="avatar" id="avatar">
+					<input type="submit" value="Modifier">
+				</p>
+			</fieldset>
+		</form>
+	</div>
+
+	<div>
+		<form action="" method="post">
+			<p>
+				<label for="pseudo">Pseudo : </label>
+				<input type="text" name="pseudo" id="pseudo" value="<?php echo $this->session['pseudo']; ?>">
+			</p>
+
+			<p>
+				<label for="email">Mail :</label>
+				<input type="text" name="email" id="email" value="<?php echo $this->session['email']; ?>">
+			</p>
+
+			<input type="submit" value="Modifier">
+		</form>
+	</div>
+
+	<div>
+		<form action="">
+			<p>
+				<label for="password">Mot de passe :</label>
+				<input type="password" name="password" id="password">
+			</p>
+
+			<p>
+				<label for="password_confirm">Confirmation :</label>
+				<input type="password" name="password_confirm" id="password_confirm">
+			</p>
+
+			<input type="submit" value="Changer le mot de passe">
+		</form>
+	</div>
+</div>

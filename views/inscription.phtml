@@ -1,0 +1,20 @@
+<h1><?php echo $title; ?></h1>
+
+<?php if (!$this->connect): ?>
+<form class="inscription" action="?page=handlingInscription" method="POST" enctype="multipart/form-data">
+	<label for="pseudo">Pseudo :</label>
+	<input type="text" name="pseudo" id="pseudo">
+
+	<label for="email">Mail :</label>
+	<input type="email" name="email" id="email">
+
+	<label for="password">Mot de passe :</label>
+	<input type="password" name="password" id="password">
+
+	<label for="password_confirm">Confirmation :</label>
+	<input type="password" name="password_confirm" id="password_confirm">
+	
+	<label></label>
+	<input type="submit" value="S'inscrire">
+</form>
+<?php endif; ?>
