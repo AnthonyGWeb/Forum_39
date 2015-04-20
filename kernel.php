@@ -11,7 +11,7 @@ require_once __ROOT_DIR__ . '/sql/MySQL.class.php';
 
 session_start();
 
-$ctrl = new Controller($_POST, $_GET, $_SESSION, $_SERVER);
+$ctrl = new Controller($_POST, $_GET, $_SESSION,$_FILES , $_SERVER);
 $page = (isset($_GET['page'])) ? $_GET['page'] : null;
 $route = routing($page);
 $ctrl->{$route}();

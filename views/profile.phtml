@@ -1,7 +1,7 @@
 <div class="profile">
 	<div>
 		<img src="img/<?php echo $this->session['avatar']; ?>" alt="">
-		<form action="">
+		<form action="?page=uploadAvatar" method="post" enctype="multipart/form-data">
 			<fieldset>
 				<p>
 					<input type="file" name="avatar" id="avatar">

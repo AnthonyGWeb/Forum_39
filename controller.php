@@ -4,14 +4,16 @@ class Controller
 	private $post,
 			$get,
 			$session,
-			$server;
+			$server,
+			$files;
 	private $connect;
 
-	public function __construct(array $post, array $get, array $session, array $server)
+	public function __construct(array $post, array $get, array $session, array $files, array $server)
 	{
 		$this->post = $post;
 		$this->get = $get;
 		$this->session = $session;
+		$this->files = $files;
 		$this->server = $server;
 
 		$this->connect = (isset($this->session['pseudo'])) ? true : false;
@@ -35,19 +37,31 @@ class Controller
 
 	public function inscriptionAction()
 	{
-		$title = 'Inscription';
-		$content = 'inscription.phtml';
-		include __ROOT_DIR__ . '/views/index.phtml';
+		if (!$this->connect) {
+			$title = 'Inscription';
+			$content = 'inscription.phtml';
+			include __ROOT_DIR__ . '/views/index.phtml';
+		}
+		else {
+			$this->session['informationUser'][] = 'Vous êtes déja inscrit ...';
+			$this->accueilAction();
+		}
 	}
 
 	public function membresAction()
 	{
-		$title = 'Membres';
-		$content = 'membres.phtml';
+		if ($this->connect) {
+			$title = 'Membres';
+			$content = 'membres.phtml';
 
-		$membres = Forum::getMembres();
-		
-		include __ROOT_DIR__ . '/views/index.phtml';
+			$membres = Forum::getMembres();
+			
+			include __ROOT_DIR__ . '/views/index.phtml';
+		}
+		else {
+			$this->session['informationUser'][] = 'Vous devez être connecté pour accéder à cette page.';
+			$this->accueilAction();
+		}
 	}
 
 	public function disconnectAction()
@@ -210,6 +224,26 @@ class Controller
 
 			$this->session['informationUser'][] = 'Message supprimé ...';
 			$this->topicAction();
+		}
+		else {
+			$this->session['informationUser'][] = 'Vous devez être connecté pour accéder à cette page.';
+			$this->accueilAction();
+		}
+	}
+
+	public function uploadAvatarAction()
+	{
+		if ($this->connect) {
+			if (empty($this->file['avatar'])) {
+				if (Forum::uploadAvatar($this->files)) {
+					$this->session['informationUser'][] = 'Avatar modifié.';
+				}
+				else {
+					$this->session['informationUser'][] = 'Erreur lors de l\'upload.';
+				}
+			}
+
+			$this->profileAction();
 		}
 		else {
 			$this->session['informationUser'][] = 'Vous devez être connecté pour accéder à cette page.';

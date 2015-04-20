@@ -161,4 +161,14 @@ abstract class Forum
 
 		return $membres;
 	}
+
+	static function uploadAvatar($files)
+	{
+		echo 'bar';
+		var_dump($files['avatar']);
+
+		
+		
+		return true;
+	}
 }

@@ -12,11 +12,11 @@ function routing($page)
 		'handlingTopic' => 'handlingTopicAction',
 		'handlingDeleteMessage' => 'handlingDeleteMessageAction',
 
-		
 		'topic' => 'topicAction',
 		'message_reply' => 'messageReplyAction',
 		'new_topic' => 'newTopicAction',
 		'profile' => 'profileAction',
+		'uploadAvatar' => 'uploadAvatarAction',
 	];
 
 	return array_key_exists($page, $routes) ? $routes[$page] : $routes['accueil'];
