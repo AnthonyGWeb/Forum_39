@@ -96,12 +96,24 @@ main .list-categorie li {
 main .list-categorie li a {
     color: #0489B1;
     font-weight: bold;
+    text-decoration: none;
+}
+
+main .list-categorie li p {
+    border-right: 1px solid #000 ;
 }
 
 main .list-categorie li:first-letter {
     text-transform: uppercase;
 }
 
+main .list-categorie .topic-new-msg {
+    color: #045FB4;
+}
+
+main .list-categorie .notView {
+    color: #045FB4;
+}
 
 /*********
 MAIN ALERT
@@ -109,6 +121,7 @@ MAIN ALERT
 main .alert {
     background: #A9F5F2;
     border: 2px solid #04B4AE;
+    margin-bottom: 30px;
 }
 
 /*********
@@ -252,8 +265,8 @@ main .sujet .info-user {
 
 main .sujet .info-user img {
     display: block;
-    max-width: 100px;
-    max-height: 100px;
+    max-width: 180px;
+    max-height: 180px;
     margin: 0 auto;
 }
 
@@ -280,6 +293,36 @@ main .form-reply textarea {
 /*********
 MAIN list-categorie
 **********/
+main .createNewTopic
+{
+    display: inline-block;
+    background: #7fbf4d;
+    background: -moz-linear-gradient(0% 100% 90deg,#63a62f, #7fbf4d);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#7fbf4d), to(#63a62f));
+    border: 1px solid #63a62f;
+    border-width: 1px 1px 0 1px;
+    border-radius: 2px;
+    -moz-box-shadow: inset 0 1px 0 0 #96ca6d;
+    -webkit-box-shadow: inset 0 1px 0 0 #96ca6d;
+    color: #fff;
+    font-family: "lucida grande", sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 1;
+    padding: 8px 15px;
+    text-align: center;
+    text-shadow: 0 -1px 0 #4c9021;
+    text-decoration: none;
+    margin-bottom: 5px;
+}
+ 
+main .createNewTopic:hover
+{
+    background: #5a962c;
+    background: -moz-linear-gradient(0% 100% 90deg,#5a962c, #72ac45);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#72ac45), to(#5a962c));
+}
+
 main .list-categorie h3 {
     margin: 0;
     float: left;
@@ -287,7 +330,7 @@ main .list-categorie h3 {
     width: 50%;
 }
 
-main .list-categorie > div span {
+main .list-categorie > div > span {
     float: right;
     box-sizing: border-box;
     width: 50%;
@@ -304,13 +347,28 @@ main .list-categorie li {
     padding: 10px 0;
 }
 
-main .list-categorie li a {
-    text-decoration: none; 
+main .list-categorie li p {
+    margin: 0;
+    display: block; 
+    float: left;
+    width: 70%;
+    padding: 0 10px 0 0;
+    box-sizing: border-box;
 }
 
-main .list-categorie li span {
-    position: absolute;
-    right: 200px;
+main .list-categorie li > span {
+    float: right;
+    padding: 0 20px 0 0;
+}
+
+main .list-categorie .writeBy {
+    font-size: 0.6rem;
+}
+
+main .list-categorie .topic-new-msg {
+    float: right;
+    font-size: 0.8rem;
+    line-height: 1.4rem;
 }
 
 /*********
@@ -328,12 +386,17 @@ main .profile input:not([type="submit"]):not([type="file"]) {
     width: 150px;
 }
 
+main .profile img {
+    max-width: 200px;
+    max-height: 200px;
+}
+
 /*********
 MAIN MEMBRES
 **********/
 main .membres img {
-    max-width: 100px;
-    max-height: 100px;
+    max-width: 30px;
+    max-height: 30px;
 }
 
 main .membres table {
@@ -346,13 +409,21 @@ main .membres tr {
 
 main .membres td {
     border: 1px solid black;
-    padding: 10px;
+    padding: 8px;
 }
 
+/*********
+MAIN MEMBRES
+**********/
 
+main .createTopic input:not([type="submit"]), main .createTopic textarea {
+    width: 100%;
+    margin-bottom: 30px;
+}
 
-
-
+main .createTopic textarea {
+    height: 400px;
+}
 
 
 /* ==========================================================================

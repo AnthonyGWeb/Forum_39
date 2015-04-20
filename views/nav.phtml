@@ -1,11 +1,16 @@
 <ul>
-	<li><a href="?page=accueil">Accueil</a></li>
-	<li><a href="?page=membres">Membres</a></li>
-	<li><a href="?page=profile">Mon profil</a></li>
+	<li><a href="?page=accueil"><i class="fa fa-home"></i>
+ Accueil</a></li>
+	<li><a href="?page=membres"><i class="fa fa-users"></i>
+ Membres</a></li>
+	<li><a href="?page=profile"><i class="fa fa-user"></i>
+ Mon profil</a></li>
 
 	<?php if ($this->session['rights'] == 9): ?>
-	<li><a href="#">ADMINISTRATION</a></li>
+	<li><a href="#"><i class="fa fa-wrench"></i>
+ Administration</a></li>
 	<?php endif; ?>
 
-	<li><a href="?page=deconnection">Deconnection</a></li>
+	<li><a href="?page=deconnection"><i class="fa fa-sign-out"></i>
+ Deconnexion</a></li>
 </ul>

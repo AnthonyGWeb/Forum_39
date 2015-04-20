@@ -25,12 +25,31 @@ class Controller
 
 	public function accueilAction()
 	{
-		$title = 'Accueil';
-		$content = 'accueil.phtml';
-
+		/***************************************
+		Récupération des informations nécéssaires pour l'affichage de la page.
+		***************************************/
 		$categories = Forum::getCategories();
 		$topics = Forum::getTopics();
 		$stats = Forum::getStats();
+
+		/***************************************
+		Récupération des nouveaux sujets/messages.
+		***************************************/
+		foreach ($topics as $i => $topic) {
+			if ($this->connect) {
+				$topics[$i]['view'] = (bool)Forum::userRequestViewTopic($this->session['id'], $topic['id']);
+			}
+			else {
+				$topics[$i]['view'] = true;
+			}
+		}
+
+		/***************************************
+					Affichage de la page
+		***************************************/
+
+		$title = 'Forum';
+		$content = 'accueil.phtml';
 
 		include __ROOT_DIR__ . '/views/index.phtml';
 	}
@@ -141,10 +160,21 @@ class Controller
 	public function topicAction()
 	{
 		if ($this->connect) {
+
+			/***************************************
+				On enregistre le fait que l'utilisateur à vu le topic
+			***************************************/
+			Forum::userViewTopic($this->session['id'], $this->get['topicId']);
+
+			/***************************************
+					Affichage de la page
+			***************************************/
 			$title = 'Topic';
 			$content = 'topic.phtml';
+
 			$topic = Forum::getTopic($this->get['topicId']);
 			$messages = Forum::getMessagesTopic($this->get['topicId']);
+
 			include __ROOT_DIR__ . '/views/index.phtml';
 		}
 		else {
@@ -156,6 +186,10 @@ class Controller
 	public function messageReplyAction()
 	{
 		if ($this->connect) {
+
+			/********************************************
+			Méthodes de réponse aux topics
+			********************************************/
 			$topic = Forum::getTopic($this->get['topicId']);
 			$messages = Forum::getMessagesTopic($this->get['topicId']);
 
@@ -163,9 +197,12 @@ class Controller
 			if (Forum::testReply($this->post)) {
 				
 				// On enregistre le message
-				Forum::createReply($this->post, $this->session['id'], $topic['id']);
-
-				$this->session['informationUser'][] = 'Votre message à bien été envoyé.';
+				if (Forum::createReply($this->post, $this->session['id'], $topic['id'])) {
+					$this->session['informationUser'][] = 'Votre message à bien été envoyé.';
+				}
+				else {
+					$this->session['informationUser'][] = 'Vous ne pouvez poster qu\'une seule fois votre message.';
+				}
 			}
 			else {
 				$this->session['informationUser'][] = 'A quoi sert une réponse si celle ci est vide ?';
@@ -200,9 +237,13 @@ class Controller
 			if (Forum::testTopic($this->post)) {
 				
 				// On enregistre le sujet
-				Forum::createTopic($this->post, $this->session['id'], $this->get['categorieId']);
+				if (Forum::createTopic($this->post, $this->session['id'], $this->get['categorieId'])) {
+					$this->session['informationUser'][] = 'Votre sujet à bien été envoyé.';
+				}
+				else {
+					$this->session['informationUser'][] = 'Vous ne pouvez poster qu\'une seule fois votre sujet.';
+				}
 
-				$this->session['informationUser'][] = 'Votre sujet à bien été envoyé.';
 				$this->accueilAction();
 			}
 			else {
@@ -235,11 +276,17 @@ class Controller
 	{
 		if ($this->connect) {
 			if (empty($this->file['avatar'])) {
-				if (Forum::uploadAvatar($this->files)) {
+
+				if (($avatar = Forum::uploadAvatar($this->files['avatar'], $this->session['id'])) !== false) {
+
 					$this->session['informationUser'][] = 'Avatar modifié.';
+					$this->session['avatar'] = $avatar;
+				
 				}
 				else {
+
 					$this->session['informationUser'][] = 'Erreur lors de l\'upload.';
+
 				}
 			}
 

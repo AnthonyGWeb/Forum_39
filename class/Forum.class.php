@@ -12,7 +12,13 @@ abstract class Forum
 	static function getTopics()
 	{
 		$bdd = new MySQL();
-		$topics = $bdd->prepare('SELECT * FROM topics')->execute()->fetchAll();
+		$topics = $bdd->prepare('SELECT 
+		topics.id,
+		topics.titre,
+		topics.categorie_id,
+		users.pseudo AS user_pseudo
+		FROM topics
+		LEFT JOIN users ON topics.user_id = users.id')->execute()->fetchAll();
 
 		return $topics;
 	}
@@ -62,17 +68,36 @@ abstract class Forum
 	static function createReply($post, $user_id, $topic_id)
 	{
 		$bdd = new MySQL();
-		$bdd->prepare('INSERT INTO messages
-		(msg, user_id, topic_id, date_create) 
-		VALUES 
-		(:msg, :user_id, :topic_id, NOW())')
+
+		/***********************************************
+			On verifie que l'utilisateur ne renvoie pas les même datas !!!! F5 alt+r etc...
+		************************************************/
+		$postExist = $bdd->prepare('SELECT COUNT(id)
+		FROM messages
+		WHERE msg = :msg')
 		->execute(array(
 			'msg' => $post['reply'],
-			'user_id' => $user_id,
-			'topic_id' => $topic_id,
-		));
+		))
+		->fetchSingle();
 
-		return true;
+		if ($postExist == 0) {
+			/***********************************************
+				On enregistre les infos ! :)
+			************************************************/
+			$bdd->prepare('INSERT INTO messages
+			(msg, user_id, topic_id, date_create) 
+			VALUES 
+			(:msg, :user_id, :topic_id, NOW())')
+			->execute(array(
+				'msg' => $post['reply'],
+				'user_id' => $user_id,
+				'topic_id' => $topic_id,
+			));
+
+			return true;
+		}
+		
+		return false;
 	}
 
 	static function testTopic($post)
@@ -83,18 +108,38 @@ abstract class Forum
 	static function createTopic($post, $user_id, $categorie_id)
 	{
 		$bdd = new MySQL();
-		$bdd->prepare('INSERT INTO topics
-		(titre, message, user_id, categorie_id, date_create) 
-		VALUES 
-		(:titre, :message, :user_id, :categorie_id, NOW())')
+
+		/***********************************************
+			On verifie que l'utilisateur ne renvoie pas les même datas !!!! F5 alt+r etc...
+		************************************************/
+		$topicExist = $bdd->prepare('SELECT COUNT(id)
+		FROM topics
+		WHERE titre = :titre AND message = :message')
 		->execute(array(
 			'titre' => $post['titre'],
 			'message' => $post['message'],
-			'user_id' => $user_id,
-			'categorie_id' => $categorie_id,
-		));
+		))
+		->fetchSingle();
 
-		return true;
+		if ($topicExist == 0) {
+			/***********************************************
+				On enregistre les infos ! :)
+			************************************************/
+			$bdd->prepare('INSERT INTO topics
+			(titre, message, user_id, categorie_id, date_create) 
+			VALUES 
+			(:titre, :message, :user_id, :categorie_id, NOW())')
+			->execute(array(
+				'titre' => $post['titre'],
+				'message' => $post['message'],
+				'user_id' => $user_id,
+				'categorie_id' => $categorie_id,
+			));
+
+			return true;
+		}
+
+		return false;
 	}
 
 	static function getStats()
@@ -162,13 +207,128 @@ abstract class Forum
 		return $membres;
 	}
 
-	static function uploadAvatar($files)
+	static function uploadAvatar($files, $id)
 	{
-		echo 'bar';
-		var_dump($files['avatar']);
+		if ($files['size'] < 2000000) {
 
-		
-		
+			$nameRandom = $files['name'] . time();
+			$arrayTypes= [
+				'image/jpeg' => '.jpeg',
+				'image/jpg' => '.jpg',
+				'image/png' => '.png',
+			];
+
+			if (array_key_exists($files['type'], $arrayTypes)) {
+	
+				$tmp = $files['tmp_name'];
+				$img = sha1($nameRandom) . $arrayTypes[$files['type']];
+				$folderTarget = 'img/' . $img;
+
+
+				if (move_uploaded_file($tmp, $folderTarget)) {
+					$bdd = new MySQL();
+					$bdd->prepare('UPDATE users
+						SET avatar=:avatar
+						WHERE id=:id')
+					->execute(array(
+						'id' => $id,
+						'avatar' => $img,
+					));
+
+					return $img;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	static function userViewTopic($id, $topicId)
+	{
+		/*****************************************
+			Si l'utilisateur n a pas déja vu le topic on l'enregistre
+		*****************************************/
+		if (!Forum::userRequestViewTopic($id, $topicId)) {
+			
+			$bdd = new MySQL();
+			$bdd->prepare('INSERT INTO user_topic
+			(user_id, topic_id)
+			VALUES (:user_id, :topic_id)')
+			->execute(array(
+				'user_id' => $id,
+				'topic_id' => $topicId,
+			));
+		}
+
+		/*****************************************
+			Si l'utilisateur n a pas déja vu les messages on l'enregistre également
+		*****************************************/
+		$messages = Forum::getMessagesTopic($topicId);
+
+		foreach ($messages as $message) {
+			if (!Forum::userRequestViewMessage($id, $message['message_id'])) {
+				$bdd = new MySQL();
+				$bdd->prepare('INSERT INTO user_message
+				(user_id, message_id)
+				VALUES (:user_id, :message_id)')
+				->execute(array(
+					'user_id' => $id,
+					'message_id' => $message['message_id'],
+				));
+			}
+		}
+
 		return true;
+	}
+
+	static function userRequestViewTopic($id, $topicId)
+	{
+		/*********************************************
+		Renvoi true ou false si il y a de nouveau message non lu.
+		*********************************************/
+
+		// Test des topics
+		$bdd = new MySQL();
+		$topicView = (bool) $bdd->prepare('SELECT IF(COUNT(user_id) > 0, "1", "0") 
+		FROM user_topic 
+		WHERE user_id = :user AND topic_id = :topic')
+		->execute(array(
+			'user' => $id,
+			'topic' => $topicId,
+		))->fetchSingle();
+
+		// Test des messages
+		$messages = Forum::getMessagesTopic($topicId);
+		$testViewMessage = array();
+		$resultMessage = true; // si y a pas de message on test seulement le topic.
+
+		foreach ($messages as $value) {
+			if (Forum::userRequestViewMessage($id, $value['message_id'])) {
+				$testViewMessage[] = true;
+			}
+			else {
+				$testViewMessage[] = false;
+			}
+		}
+
+		$resultMessage = in_array(false, $testViewMessage);
+
+		return ($topicView && !$resultMessage) ? true : false;
+		//return false;
+	}
+
+	static function userRequestViewMessage($id, $messageId)
+	{
+		/********************************************
+		Renvoi true ou false si l'utilisateur à vu le message
+		*********************************************/
+		$bdd = new MySQL();
+		return (bool) $bdd->prepare('SELECT IF(COUNT(user_id) > 0, "1", "0") 
+		FROM user_message 
+		WHERE user_id = :user AND message_id = :message')
+		->execute(array(
+			'user' => $id,
+			'message' => $messageId,
+		))->fetchSingle();
 	}
 }

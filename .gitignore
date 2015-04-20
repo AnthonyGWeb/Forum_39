@@ -1,3 +1,5 @@
 config/mysql.php
 .htaccess
 web/.htaccess
+.gitconfig
+web/img/

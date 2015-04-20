@@ -1,7 +1,5 @@
 <h1><?php echo $title; ?></h1>
 
-<h2>Catégories :</h2>
-
 <div class="list-categorie">
 	<?php foreach ($categories as $categorie): ?>
 		
@@ -12,17 +10,39 @@
 			sujet(s)</span>
 		</div>
 		
-		<span><a href="?page=new_topic&amp;categorieId=<?php echo $categorie['id']; ?>">Créer un nouveau sujet</a></span>
+		<?php if ($this->connect): ?>
+		<span><a class="createNewTopic" href="?page=new_topic&amp;categorieId=<?php echo $categorie['id']; ?>">Créer un nouveau sujet</a></span>
+		<?php endif; ?>
 
 		<ul>
 			<?php foreach ($topics as $topic): ?>
 				<?php if ($topic['categorie_id'] == $categorie['id']) : ?>
-					<li>
-						<a href="?page=topic&amp;topicId=<?php echo $topic['id']; ?>">
-						<?php echo $topic['titre']; ?>
-						</a>
+					<li class="clearfix">
+						<p> 
+							<a class="<?php if (!$topic['view']) { echo 'notView'; }?>" href="?page=topic&amp;topicId=<?php echo $topic['id']; ?>">
+							<i class="fa fa-comments"></i> 
+							<?php echo $topic['titre']; ?>
+							</a>
 
-						<span><?php echo $stats['numberMessage'][$topic['id']] ?> message(s)</span>
+							<span class="writeBy">
+								écrit par : 
+								<?php echo $topic['user_pseudo']; ?>.
+								Dernier message de : xxx.
+							</span>
+	
+							<?php if (!$topic['view']): ?>
+							<span class="topic-new-msg">
+								<i class="fa fa-envelope-o"></i>
+								Nouveau message
+							</span>
+							<?php endif; ?>
+							
+						</p>
+
+						<span>
+							<?php echo $stats['numberMessage'][$topic['id']]; ?> 
+							message(s)
+						</span>
 					</li>
 				<?php endif; ?>
 			<?php endforeach; ?>

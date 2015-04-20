@@ -1,6 +1,6 @@
 <div class="profile">
 	<div>
-		<img src="img/<?php echo $this->session['avatar']; ?>" alt="">
+		<img src="<?php echo 'img/' . $this->session['avatar']; ?>" alt="">
 		<form action="?page=uploadAvatar" method="post" enctype="multipart/form-data">
 			<fieldset>
 				<p>
@@ -14,7 +14,7 @@
 	<div>
 		<form action="" method="post">
 			<p>
-				<label for="pseudo">Pseudo : </label>
+				<label for="pseudo">Pseudo :</label>
 				<input type="text" name="pseudo" id="pseudo" value="<?php echo $this->session['pseudo']; ?>">
 			</p>
 
