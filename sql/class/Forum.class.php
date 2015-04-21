@@ -10,7 +10,6 @@ final class Forum extends SQLModel
 
 	public function getTopics()
 	{
-		$this->bdd = new MySQL();
 		$topics = $this->bdd->prepare('SELECT
 		topics.id,
 		topics.titre,
@@ -25,7 +24,6 @@ final class Forum extends SQLModel
 
 	public function getTopic($id)
 	{
-		$this->bdd = new MySQL();
 		$topic = $this->bdd->prepare('SELECT
 			topics.id,
 			topics.message,
@@ -44,7 +42,6 @@ final class Forum extends SQLModel
 
 	public function getMessagesTopic($topicId)
 	{
-		$this->bdd = new MySQL();
 		$messages = $this->bdd->prepare('SELECT
 			messages.id AS message_id,
 			messages.msg,
@@ -67,8 +64,6 @@ final class Forum extends SQLModel
 
 	public function createReply($post, $user_id, $topic_id)
 	{
-		$this->bdd = new MySQL();
-
 		/***********************************************
 			On verifie que l'utilisateur ne renvoie pas les même datas !!!! F5 alt+r etc...
 		************************************************/
@@ -107,8 +102,6 @@ final class Forum extends SQLModel
 
 	public function createTopic($post, $user_id, $categorie_id)
 	{
-		$this->bdd = new MySQL();
-
 		/***********************************************
 			On verifie que l'utilisateur ne renvoie pas les même datas !!!! F5 alt+r etc...
 		************************************************/
@@ -144,7 +137,6 @@ final class Forum extends SQLModel
 
 	public function getStats()
 	{
-		$this->bdd = new MySQL();
 		$counts = array();
 
 		/*******************************************
@@ -184,7 +176,6 @@ final class Forum extends SQLModel
 
 	public function deleteMessage($messageId)
 	{
-		$this->bdd = new MySQL();
 		$this->bdd->prepare('DELETE FROM messages WHERE id=:id')
 		->execute(array(
 			'id' => $messageId,
@@ -195,7 +186,6 @@ final class Forum extends SQLModel
 
 	public function getMembres()
 	{
-		$this->bdd = new MySQL();
 		$membres = $this->bdd->prepare('SELECT
 		pseudo,
 		email,
@@ -250,7 +240,6 @@ final class Forum extends SQLModel
 		*****************************************/
 		if (!Forum::userRequestViewTopic($id, $topicId)) {
 
-			$this->bdd = new MySQL();
 			$this->bdd->prepare('INSERT INTO user_topic
 			(user_id, topic_id)
 			VALUES (:user_id, :topic_id)')
@@ -267,7 +256,6 @@ final class Forum extends SQLModel
 
 		foreach ($messages as $message) {
 			if (!Forum::userRequestViewMessage($id, $message['message_id'])) {
-				$this->bdd = new MySQL();
 				$this->bdd->prepare('INSERT INTO user_message
 				(user_id, message_id)
 				VALUES (:user_id, :message_id)')
@@ -288,7 +276,6 @@ final class Forum extends SQLModel
 		*********************************************/
 
 		// Test des topics
-		$this->bdd = new MySQL();
 		$topicView = (bool) $this->bdd->prepare('SELECT IF(COUNT(user_id) > 0, "1", "0")
 		FROM user_topic
 		WHERE user_id = :user AND topic_id = :topic')
@@ -322,7 +309,6 @@ final class Forum extends SQLModel
 		/********************************************
 		Renvoi true ou false si l'utilisateur à vu le message
 		*********************************************/
-		$this->bdd = new MySQL();
 		return (bool) $this->bdd->prepare('SELECT IF(COUNT(user_id) > 0, "1", "0")
 		FROM user_message
 		WHERE user_id = :user AND message_id = :message')
