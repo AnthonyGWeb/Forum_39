@@ -1,7 +1,7 @@
 <?php
 abstract class SQLModel
 {
-	private $bdd;
+	protected $bdd;
 
 	public function __construct()
 	{

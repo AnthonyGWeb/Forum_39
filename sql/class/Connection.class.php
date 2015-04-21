@@ -4,13 +4,13 @@ final class Connection extends SQLModel
 {
 	public function connect($post) {
 		// traitement connect
-		$bdd = new MySQL();
-		$existUser = $bdd->prepare('SELECT COUNT(id) 
+		$this->bdd = new MySQL();
+		$existUser = $this->bdd->prepare('SELECT COUNT(id) 
 		FROM users 
 		WHERE pseudo=:pseudo AND password=SHA1(:password)')->execute($post)->fetchSingle();
 
 		if ($existUser) {
-		$user = $bdd->prepare('SELECT
+		$user = $this->bdd->prepare('SELECT
 		id, pseudo, email, avatar, rights 
 		FROM users 
 		WHERE pseudo=:pseudo AND password=SHA1(:password)')->execute($post)->fetch();

@@ -27,14 +27,14 @@ final class Inscription extends SQLModel
 	public function inscriptionFactory($post)
 	{
 		$errorMessages = array();
-		$bdd = new MySQL();
+		$this->bdd = new MySQL();
 		
-		if ($bdd->prepare('SELECT COUNT(id) FROM users WHERE pseudo=:pseudo')->execute(array('pseudo' => $post['pseudo']))->fetchSingle() != 0)	{
+		if ($this->bdd->prepare('SELECT COUNT(id) FROM users WHERE pseudo=:pseudo')->execute(array('pseudo' => $post['pseudo']))->fetchSingle() != 0)	{
 
 			$errorMessages[] = 'Le pseudo est déjà pris. Veuillez en choisir un autre'; 
 		}
 
-		if ($bdd->prepare('SELECT COUNT(id) FROM users WHERE email=:email')->execute(array('email' => $post['email']))->fetchSingle() != 0)	{
+		if ($this->bdd->prepare('SELECT COUNT(id) FROM users WHERE email=:email')->execute(array('email' => $post['email']))->fetchSingle() != 0)	{
 
 			$errorMessages[] = 'L\'email existe déjà. Essayer de vous connecter.'; 
 		}
@@ -44,8 +44,8 @@ final class Inscription extends SQLModel
 
 	public function createUser($post)
 	{
-		$bdd = new MySQL();
-		$bdd->prepare('INSERT INTO users (pseudo, email, password) VALUES (:pseudo, :email, SHA1(:password))')->execute(array( 
+		$this->bdd = new MySQL();
+		$this->bdd->prepare('INSERT INTO users (pseudo, email, password) VALUES (:pseudo, :email, SHA1(:password))')->execute(array( 
 			'pseudo' => $post['pseudo'],
 			'email' => $post['email'],
 			'password' => $post['password'],
