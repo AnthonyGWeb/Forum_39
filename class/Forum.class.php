@@ -16,6 +16,7 @@ abstract class Forum
 		topics.id,
 		topics.titre,
 		topics.categorie_id,
+		topics.date_create AS topic_date_create,
 		users.pseudo AS user_pseudo
 		FROM topics
 		LEFT JOIN users ON topics.user_id = users.id')->execute()->fetchAll();

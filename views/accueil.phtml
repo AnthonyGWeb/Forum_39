@@ -14,8 +14,14 @@
 		<span><a class="createNewTopic" href="?page=new_topic&amp;categorieId=<?php echo $categorie['id']; ?>">Créer un nouveau sujet</a></span>
 		<?php endif; ?>
 
+<!-- 
+	*******************************************************
+		AFFICHAGE DES TOPICS DE LA CATEGORIE EN COURS
+	*******************************************************
+-->
 		<ul>
 			<?php foreach ($topics as $topic): ?>
+			<?php $date = new DateTime($topic['topic_date_create']); ?>
 				<?php if ($topic['categorie_id'] == $categorie['id']) : ?>
 					<li class="clearfix">
 						<p> 
@@ -26,7 +32,9 @@
 
 							<span class="writeBy">
 								écrit par : 
-								<?php echo $topic['user_pseudo']; ?>.
+								<?php echo $topic['user_pseudo']; ?> 
+								le <?php $date = new DateTime($topic['topic_date_create']);
+								echo $date->format("d/m/Y à H:i"); ?> .
 								Dernier message de : xxx.
 							</span>
 	
