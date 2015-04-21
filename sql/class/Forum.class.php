@@ -1,7 +1,7 @@
 <?php
-abstract class Forum
+final class Forum extends SQLModel
 {
-	static function getCategories()
+	public function getCategories()
 	{
 		$bdd = new MySQL();
 		$categories = $bdd->prepare('SELECT * FROM categories')->execute()->fetchAll();
@@ -9,7 +9,7 @@ abstract class Forum
 		return $categories;
 	}
 
-	static function getTopics()
+	public function getTopics()
 	{
 		$bdd = new MySQL();
 		$topics = $bdd->prepare('SELECT 
@@ -24,7 +24,7 @@ abstract class Forum
 		return $topics;
 	}
 
-	static function getTopic($id)
+	public function getTopic($id)
 	{
 		$bdd = new MySQL();
 		$topic = $bdd->prepare('SELECT 
@@ -43,7 +43,7 @@ abstract class Forum
 		return $topic;
 	}
 
-	static function getMessagesTopic($topicId)
+	public function getMessagesTopic($topicId)
 	{
 		$bdd = new MySQL();
 		$messages = $bdd->prepare('SELECT 
@@ -61,12 +61,12 @@ abstract class Forum
 		return $messages;
 	}
 
-	static function testReply($post)
+	public function testReply($post)
 	{
 		return (empty($post['reply'])) ? false : true;
 	}
 
-	static function createReply($post, $user_id, $topic_id)
+	public function createReply($post, $user_id, $topic_id)
 	{
 		$bdd = new MySQL();
 
@@ -101,12 +101,12 @@ abstract class Forum
 		return false;
 	}
 
-	static function testTopic($post)
+	public function testTopic($post)
 	{
 		return (empty($post['titre']) || empty($post['message'])) ? false : true;
 	}
 
-	static function createTopic($post, $user_id, $categorie_id)
+	public function createTopic($post, $user_id, $categorie_id)
 	{
 		$bdd = new MySQL();
 
@@ -143,7 +143,7 @@ abstract class Forum
 		return false;
 	}
 
-	static function getStats()
+	public function getStats()
 	{
 		$bdd = new MySQL();
 		$counts = array();
@@ -183,7 +183,7 @@ abstract class Forum
 		return $counts;
 	}
 
-	static function deleteMessage($messageId)
+	public function deleteMessage($messageId)
 	{
 		$bdd = new MySQL();
 		$bdd->prepare('DELETE FROM messages WHERE id=:id')
@@ -194,7 +194,7 @@ abstract class Forum
 		return true;
 	}
 
-	static function getMembres()
+	public function getMembres()
 	{
 		$bdd = new MySQL();
 		$membres = $bdd->prepare('SELECT
@@ -208,7 +208,7 @@ abstract class Forum
 		return $membres;
 	}
 
-	static function uploadAvatar($files, $id)
+	public function uploadAvatar($files, $id)
 	{
 		if ($files['size'] < 2000000) {
 
@@ -244,7 +244,7 @@ abstract class Forum
 		return false;
 	}
 
-	static function userViewTopic($id, $topicId)
+	public function userViewTopic($id, $topicId)
 	{
 		/*****************************************
 			Si l'utilisateur n a pas déja vu le topic on l'enregistre
@@ -282,7 +282,7 @@ abstract class Forum
 		return true;
 	}
 
-	static function userRequestViewTopic($id, $topicId)
+	public function userRequestViewTopic($id, $topicId)
 	{
 		/*********************************************
 		Renvoi true ou false si il y a de nouveau message non lu.
@@ -318,7 +318,7 @@ abstract class Forum
 		//return false;
 	}
 
-	static function userRequestViewMessage($id, $messageId)
+	public function userRequestViewMessage($id, $messageId)
 	{
 		/********************************************
 		Renvoi true ou false si l'utilisateur à vu le message

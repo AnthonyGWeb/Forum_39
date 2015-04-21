@@ -28,16 +28,18 @@ class Controller
 		/***************************************
 		Récupération des informations nécéssaires pour l'affichage de la page.
 		***************************************/
-		$categories = Forum::getCategories();
-		$topics = Forum::getTopics();
-		$stats = Forum::getStats();
+		$forum = new Forum();
+
+		$categories = $forum->getCategories();
+		$topics = $forum->getTopics();
+		$stats = $forum->getStats();
 
 		/***************************************
 		Récupération des nouveaux sujets/messages.
 		***************************************/
 		foreach ($topics as $i => $topic) {
 			if ($this->connect) {
-				$topics[$i]['view'] = (bool)Forum::userRequestViewTopic($this->session['id'], $topic['id']);
+				$topics[$i]['view'] = (bool)$forum->userRequestViewTopic($this->session['id'], $topic['id']);
 			}
 			else {
 				$topics[$i]['view'] = true;
@@ -48,7 +50,7 @@ class Controller
 					Affichage de la page
 		***************************************/
 
-		$title = 'Forum';
+		$title = 'forum';
 		$content = 'accueil.phtml';
 
 		include __ROOT_DIR__ . '/views/index.phtml';
@@ -69,11 +71,13 @@ class Controller
 
 	public function membresAction()
 	{
+		$forum = new Forum();
+
 		if ($this->connect) {
 			$title = 'Membres';
 			$content = 'membres.phtml';
 
-			$membres = Forum::getMembres();
+			$membres = $forum->getMembres();
 			
 			include __ROOT_DIR__ . '/views/index.phtml';
 		}
@@ -85,9 +89,11 @@ class Controller
 
 	public function disconnectAction()
 	{
+		$connection = new Connection();
+
 		$title = 'Disconnect';
 		$content = 'disconnect.phtml';
-		Connection::disconnect();
+		$connection->disconnect();
 
 		$this->session = array();
 		$this->connect = (isset($this->session['pseudo'])) ? true : false;
@@ -112,13 +118,15 @@ class Controller
 
 	public function handlingConnectAction()
 	{
-		Connection::connect($this->post);
+		$connection = new Connection();
+
+		$connection->connect($this->post);
 
 		$this->session = array_merge($this->session, $_SESSION);
 
 		if (isset($this->session['pseudo'])) {
 			$this->connect = true;
-			$this->session['informationUser'][] = 'Connection reussi. Bienvenue '. $this->session['pseudo'] . '.';
+			$this->session['informationUser'][] = 'Connexion reussi. Bienvenue '. $this->session['pseudo'] . '.';
 		}
 		else {
 			$this->connect = false;
@@ -130,8 +138,9 @@ class Controller
 
 	public function handlingInscriptionAction()
 	{
+		$inscription = new Inscription();
 		// On test si le formulaire est complet !
-		$errorMessages = Inscription::formulaireCompleted($this->post);
+		$errorMessages = $inscription->formulaireCompleted($this->post);
 
 		if (count($errorMessages) > 0) {
 			// Il y'a des erreurs !
@@ -140,7 +149,7 @@ class Controller
 		}
 		else {
 			// On test si l'inscription est possible, pas de doublon présent.
-			$errorMessages = Inscription::inscriptionFactory($this->post);
+			$errorMessages = $inscription->inscriptionFactory($this->post);
 
 			if (count($errorMessages) > 0) {
 				// Il y a des doublons :(
@@ -150,7 +159,7 @@ class Controller
 			else {
 				// On enregistre notre nouveau client/utilisateur.
 
-				Inscription::createUser($this->post);
+				$inscription->createUser($this->post);
 				$this->session['informationUser'][] = 'Bravo vous voila inscrit, vous pouvez vous connecter dès à présent.';
 				$this->accueilAction();
 			}
@@ -159,12 +168,14 @@ class Controller
 
 	public function topicAction()
 	{
+		$forum = new Forum();
+
 		if ($this->connect) {
 
 			/***************************************
 				On enregistre le fait que l'utilisateur à vu le topic
 			***************************************/
-			Forum::userViewTopic($this->session['id'], $this->get['topicId']);
+			$forum->userViewTopic($this->session['id'], $this->get['topicId']);
 
 			/***************************************
 					Affichage de la page
@@ -172,8 +183,8 @@ class Controller
 			$title = 'Topic';
 			$content = 'topic.phtml';
 
-			$topic = Forum::getTopic($this->get['topicId']);
-			$messages = Forum::getMessagesTopic($this->get['topicId']);
+			$topic = $forum->getTopic($this->get['topicId']);
+			$messages = $forum->getMessagesTopic($this->get['topicId']);
 
 			include __ROOT_DIR__ . '/views/index.phtml';
 		}
@@ -185,19 +196,21 @@ class Controller
 
 	public function messageReplyAction()
 	{
+		$forum = new Forum();
+
 		if ($this->connect) {
 
 			/********************************************
 			Méthodes de réponse aux topics
 			********************************************/
-			$topic = Forum::getTopic($this->get['topicId']);
-			$messages = Forum::getMessagesTopic($this->get['topicId']);
+			$topic = $forum->getTopic($this->get['topicId']);
+			$messages = $forum->getMessagesTopic($this->get['topicId']);
 
 			// Test du message
-			if (Forum::testReply($this->post)) {
+			if ($forum->testReply($this->post)) {
 				
 				// On enregistre le message
-				if (Forum::createReply($this->post, $this->session['id'], $topic['id'])) {
+				if ($forum->createReply($this->post, $this->session['id'], $topic['id'])) {
 					$this->session['informationUser'][] = 'Votre message à bien été envoyé.';
 				}
 				else {
@@ -232,12 +245,14 @@ class Controller
 
 	public function handlingTopicAction()
 	{
+		$forum = new Forum();
+
 		if ($this->connect) {
 
-			if (Forum::testTopic($this->post)) {
+			if ($forum->testTopic($this->post)) {
 				
 				// On enregistre le sujet
-				if (Forum::createTopic($this->post, $this->session['id'], $this->get['categorieId'])) {
+				if ($forum->createTopic($this->post, $this->session['id'], $this->get['categorieId'])) {
 					$this->session['informationUser'][] = 'Votre sujet à bien été envoyé.';
 				}
 				else {
@@ -259,9 +274,11 @@ class Controller
 
 	public function handlingDeleteMessageAction()
 	{
+		$forum = new Forum();
+
 		if ($this->connect) {
 
-			Forum::deleteMessage($this->get['messageId']);
+			$forum->deleteMessage($this->get['messageId']);
 
 			$this->session['informationUser'][] = 'Message supprimé ...';
 			$this->topicAction();
@@ -274,10 +291,12 @@ class Controller
 
 	public function uploadAvatarAction()
 	{
+		$forum = new Forum();
+
 		if ($this->connect) {
 			if (empty($this->file['avatar'])) {
 
-				if (($avatar = Forum::uploadAvatar($this->files['avatar'], $this->session['id'])) !== false) {
+				if (($avatar = $forum->uploadAvatar($this->files['avatar'], $this->session['id'])) !== false) {
 
 					$this->session['informationUser'][] = 'Avatar modifié.';
 					$this->session['avatar'] = $avatar;

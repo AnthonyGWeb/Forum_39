@@ -1,8 +1,8 @@
 <?php
 
-abstract class Connection
+final class Connection extends SQLModel
 {
-	static function connect($post) {
+	public function connect($post) {
 		// traitement connect
 		$bdd = new MySQL();
 		$existUser = $bdd->prepare('SELECT COUNT(id) 
@@ -26,7 +26,7 @@ abstract class Connection
 		}
 	}
 
-	static function disconnect() {
+	public function disconnect() {
 		session_destroy();
 		return true;
 	}

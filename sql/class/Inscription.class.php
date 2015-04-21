@@ -1,7 +1,7 @@
 <?php
-abstract class Inscription
+final class Inscription extends SQLModel
 {
-	static function formulaireCompleted($post)
+	public function formulaireCompleted($post)
 	{
 		$errorMessages = array();
 
@@ -24,7 +24,7 @@ abstract class Inscription
 		return $errorMessages;
 	}
 
-	static function inscriptionFactory($post)
+	public function inscriptionFactory($post)
 	{
 		$errorMessages = array();
 		$bdd = new MySQL();
@@ -42,7 +42,7 @@ abstract class Inscription
 		return $errorMessages;
 	}
 
-	static function createUser($post)
+	public function createUser($post)
 	{
 		$bdd = new MySQL();
 		$bdd->prepare('INSERT INTO users (pseudo, email, password) VALUES (:pseudo, :email, SHA1(:password))')->execute(array( 
