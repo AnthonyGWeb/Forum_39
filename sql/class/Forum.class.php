@@ -138,32 +138,36 @@ final class Forum extends SQLModel
 	public function getStats()
 	{
 		$counts = array();
-
-		/*******************************************
-				COUNT TOPIC
+		/******************************************
+					COUNT TOPIC AND MESSAGE
 		*******************************************/
-
-		$tmp = $this->bdd->prepare('SELECT
-		COUNT(topics.id) AS nbr, categories.id AS categorie_id
-			FROM categories
-			LEFT JOIN topics ON categories.id = topics.categorie_id
-			GROUP BY categories.id')->execute()->fetchAll();
+		$tmp = $this->bdd->prepare('SELECT 
+		categories.id AS categorie_id, 
+		COUNT(DISTINCT topics.id) AS nbr_topic, 
+		COUNT(DISTINCT messages.id) + COUNT(DISTINCT topics.id) AS nbr_message
+		FROM categories
+		LEFT JOIN topics ON topics.categorie_id = categories.id
+		LEFT JOIN messages ON messages.topic_id = topics.id
+		GROUP BY categories.id
+		')->execute()->fetchAll();
 
 		$counts['numberTopic'] = array();
 
 		foreach ($tmp as $val) {
-			$counts['numberTopic'][$val['categorie_id']] = $val['nbr'];
+			$counts['numberTopic'][$val['categorie_id']]['nbr_topic'] = $val['nbr_topic'];
+			$counts['numberTopic'][$val['categorie_id']]['nbr_message'] = $val['nbr_message'];
 		}
 
 		/*******************************************
-				COUNT MESSAGES
+				COUNT MESSAGES par TOPIC
 		*******************************************/
 
 		$tmp = $this->bdd->prepare('SELECT
-		COUNT(messages.id) AS nbr, topics.id AS categorie_id
-			FROM topics
-			LEFT JOIN messages ON topics.id = messages.topic_id
-			GROUP BY topics.id')->execute()->fetchAll();
+		COUNT(messages.id) AS nbr,
+		topics.id AS categorie_id
+		FROM topics
+		LEFT JOIN messages ON topics.id = messages.topic_id
+		GROUP BY topics.id')->execute()->fetchAll();
 
 		$counts['numberMessage'] = array();
 

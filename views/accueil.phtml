@@ -6,8 +6,11 @@
 		<div class="clearfix">
 			<h3><?php echo $categorie['titre']; ?></h3>
 			<span> Actuellement : 
-			<?php echo $stats['numberTopic'][$categorie['id']] ?> 
-			sujet(s)</span>
+			<?php echo $stats['numberTopic'][$categorie['id']]['nbr_topic']; ?> 
+			sujet<small>(s)</small> / 
+			<?php echo $stats['numberTopic'][$categorie['id']]['nbr_message']; ?>
+			message<small>(s)</small>.
+			</span>
 		</div>
 		
 		<?php if ($this->connect): ?>
