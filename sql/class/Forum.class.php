@@ -3,16 +3,14 @@ final class Forum extends SQLModel
 {
 	public function getCategories()
 	{
-		$bdd = new MySQL();
-		$categories = $bdd->prepare('SELECT * FROM categories')->execute()->fetchAll();
+		$categories = $this->bdd->prepare('SELECT * FROM categories')->execute()->fetchAll();
 
 		return $categories;
 	}
 
 	public function getTopics()
 	{
-		$bdd = new MySQL();
-		$topics = $bdd->prepare('SELECT 
+		$topics = $this->bdd->prepare('SELECT
 		topics.id,
 		topics.titre,
 		topics.categorie_id,
@@ -26,8 +24,7 @@ final class Forum extends SQLModel
 
 	public function getTopic($id)
 	{
-		$bdd = new MySQL();
-		$topic = $bdd->prepare('SELECT 
+		$topic = $this->bdd->prepare('SELECT
 			topics.id,
 			topics.message,
 			topics.titre,
@@ -35,8 +32,8 @@ final class Forum extends SQLModel
 			topics.date_create AS topics_date_create,
 			users.pseudo,
 			users.rights,
-			users.avatar 
-			FROM topics 
+			users.avatar
+			FROM topics
 			LEFT JOIN users ON topics.user_id=users.id
 			WHERE topics.id=:topic')->execute(array('topic' => $id,))->fetch();
 
@@ -45,8 +42,7 @@ final class Forum extends SQLModel
 
 	public function getMessagesTopic($topicId)
 	{
-		$bdd = new MySQL();
-		$messages = $bdd->prepare('SELECT 
+		$messages = $this->bdd->prepare('SELECT
 			messages.id AS message_id,
 			messages.msg,
 			messages.date_create,
@@ -68,12 +64,10 @@ final class Forum extends SQLModel
 
 	public function createReply($post, $user_id, $topic_id)
 	{
-		$bdd = new MySQL();
-
 		/***********************************************
 			On verifie que l'utilisateur ne renvoie pas les même datas !!!! F5 alt+r etc...
 		************************************************/
-		$postExist = $bdd->prepare('SELECT COUNT(id)
+		$postExist = $this->bdd->prepare('SELECT COUNT(id)
 		FROM messages
 		WHERE msg = :msg')
 		->execute(array(
@@ -85,9 +79,9 @@ final class Forum extends SQLModel
 			/***********************************************
 				On enregistre les infos ! :)
 			************************************************/
-			$bdd->prepare('INSERT INTO messages
-			(msg, user_id, topic_id, date_create) 
-			VALUES 
+			$this->bdd->prepare('INSERT INTO messages
+			(msg, user_id, topic_id, date_create)
+			VALUES
 			(:msg, :user_id, :topic_id, NOW())')
 			->execute(array(
 				'msg' => $post['reply'],
@@ -97,7 +91,7 @@ final class Forum extends SQLModel
 
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -108,12 +102,10 @@ final class Forum extends SQLModel
 
 	public function createTopic($post, $user_id, $categorie_id)
 	{
-		$bdd = new MySQL();
-
 		/***********************************************
 			On verifie que l'utilisateur ne renvoie pas les même datas !!!! F5 alt+r etc...
 		************************************************/
-		$topicExist = $bdd->prepare('SELECT COUNT(id)
+		$topicExist = $this->bdd->prepare('SELECT COUNT(id)
 		FROM topics
 		WHERE titre = :titre AND message = :message')
 		->execute(array(
@@ -126,9 +118,9 @@ final class Forum extends SQLModel
 			/***********************************************
 				On enregistre les infos ! :)
 			************************************************/
-			$bdd->prepare('INSERT INTO topics
-			(titre, message, user_id, categorie_id, date_create) 
-			VALUES 
+			$this->bdd->prepare('INSERT INTO topics
+			(titre, message, user_id, categorie_id, date_create)
+			VALUES
 			(:titre, :message, :user_id, :categorie_id, NOW())')
 			->execute(array(
 				'titre' => $post['titre'],
@@ -145,19 +137,18 @@ final class Forum extends SQLModel
 
 	public function getStats()
 	{
-		$bdd = new MySQL();
 		$counts = array();
 
 		/*******************************************
 				COUNT TOPIC
 		*******************************************/
 
-		$tmp = $bdd->prepare('SELECT
+		$tmp = $this->bdd->prepare('SELECT
 		COUNT(topics.id) AS nbr, categories.id AS categorie_id
 			FROM categories
 			LEFT JOIN topics ON categories.id = topics.categorie_id
 			GROUP BY categories.id')->execute()->fetchAll();
-		
+
 		$counts['numberTopic'] = array();
 
 		foreach ($tmp as $val) {
@@ -168,12 +159,12 @@ final class Forum extends SQLModel
 				COUNT MESSAGES
 		*******************************************/
 
-		$tmp = $bdd->prepare('SELECT
+		$tmp = $this->bdd->prepare('SELECT
 		COUNT(messages.id) AS nbr, topics.id AS categorie_id
 			FROM topics
 			LEFT JOIN messages ON topics.id = messages.topic_id
 			GROUP BY topics.id')->execute()->fetchAll();
-		
+
 		$counts['numberMessage'] = array();
 
 		foreach ($tmp as $val) {
@@ -185,8 +176,7 @@ final class Forum extends SQLModel
 
 	public function deleteMessage($messageId)
 	{
-		$bdd = new MySQL();
-		$bdd->prepare('DELETE FROM messages WHERE id=:id')
+		$this->bdd->prepare('DELETE FROM messages WHERE id=:id')
 		->execute(array(
 			'id' => $messageId,
 		));
@@ -196,8 +186,7 @@ final class Forum extends SQLModel
 
 	public function getMembres()
 	{
-		$bdd = new MySQL();
-		$membres = $bdd->prepare('SELECT
+		$membres = $this->bdd->prepare('SELECT
 		pseudo,
 		email,
 		avatar,
@@ -220,15 +209,15 @@ final class Forum extends SQLModel
 			];
 
 			if (array_key_exists($files['type'], $arrayTypes)) {
-	
+
 				$tmp = $files['tmp_name'];
 				$img = sha1($nameRandom) . $arrayTypes[$files['type']];
 				$folderTarget = 'img/' . $img;
 
 
 				if (move_uploaded_file($tmp, $folderTarget)) {
-					$bdd = new MySQL();
-					$bdd->prepare('UPDATE users
+					$this->bdd = new MySQL();
+					$this->bdd->prepare('UPDATE users
 						SET avatar=:avatar
 						WHERE id=:id')
 					->execute(array(
@@ -250,9 +239,8 @@ final class Forum extends SQLModel
 			Si l'utilisateur n a pas déja vu le topic on l'enregistre
 		*****************************************/
 		if (!Forum::userRequestViewTopic($id, $topicId)) {
-			
-			$bdd = new MySQL();
-			$bdd->prepare('INSERT INTO user_topic
+
+			$this->bdd->prepare('INSERT INTO user_topic
 			(user_id, topic_id)
 			VALUES (:user_id, :topic_id)')
 			->execute(array(
@@ -268,8 +256,7 @@ final class Forum extends SQLModel
 
 		foreach ($messages as $message) {
 			if (!Forum::userRequestViewMessage($id, $message['message_id'])) {
-				$bdd = new MySQL();
-				$bdd->prepare('INSERT INTO user_message
+				$this->bdd->prepare('INSERT INTO user_message
 				(user_id, message_id)
 				VALUES (:user_id, :message_id)')
 				->execute(array(
@@ -289,9 +276,8 @@ final class Forum extends SQLModel
 		*********************************************/
 
 		// Test des topics
-		$bdd = new MySQL();
-		$topicView = (bool) $bdd->prepare('SELECT IF(COUNT(user_id) > 0, "1", "0") 
-		FROM user_topic 
+		$topicView = (bool) $this->bdd->prepare('SELECT IF(COUNT(user_id) > 0, "1", "0")
+		FROM user_topic
 		WHERE user_id = :user AND topic_id = :topic')
 		->execute(array(
 			'user' => $id,
@@ -323,9 +309,8 @@ final class Forum extends SQLModel
 		/********************************************
 		Renvoi true ou false si l'utilisateur à vu le message
 		*********************************************/
-		$bdd = new MySQL();
-		return (bool) $bdd->prepare('SELECT IF(COUNT(user_id) > 0, "1", "0") 
-		FROM user_message 
+		return (bool) $this->bdd->prepare('SELECT IF(COUNT(user_id) > 0, "1", "0")
+		FROM user_message
 		WHERE user_id = :user AND message_id = :message')
 		->execute(array(
 			'user' => $id,
