@@ -67,13 +67,17 @@ return [
 
 		'message_reply' => [
 			'method' => 'messageReplyAction',
-			'get' => null,
+			'get' => [
+				'topicId' => 'is_numeric',
+				],
 			'post' => null,
 		],
 
 		'new_topic' => [
 			'method' => 'newTopicAction',
-			'get' => null,
+			'get' => [
+				'topicId' => 'is_numeric',
+				],
 			'post' => null,
 		],
 

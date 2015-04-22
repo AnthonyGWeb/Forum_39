@@ -248,12 +248,12 @@ main .inscription label {
 MAIN TOPIC
 **********/
 main .sujet {
-    border: 1px solid black;
+    border: 2px solid #ccc;
     margin-bottom: 10px;
 }
 
 main .sujet h3 {
-    border: 1px solid black;
+    border-bottom: 1px solid black;
     margin: 0;
     padding: 10px 0 10px 30px;
 }
@@ -261,7 +261,7 @@ main .sujet h3 {
 main .sujet .info-user {
     float: left;
     padding: 20px 0 0 10px;
-    border: 1px solid black;
+    border-right: 1px solid black;
     width: 25%;
     box-sizing: border-box;
 }
@@ -275,14 +275,14 @@ main .sujet .info-user img {
 
 main .sujet .body-msg {
     float: left;
-    border: 1px solid black;
+    /*border: 1px solid black;*/
     width: 75%;
     box-sizing: border-box;
     padding: 2px 20px;
 }
 
 main .sujet .modif-bar {
-    border: 1px solid black;
+    border-top: 1px solid black;
     text-align: right;
     padding: 5px 20px 5px 0;
 }
