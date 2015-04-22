@@ -76,7 +76,7 @@ return [
 		'new_topic' => [
 			'method' => 'newTopicAction',
 			'get' => [
-				'topicId' => 'is_numeric',
+				'categorieId' => 'is_numeric',
 				],
 			'post' => null,
 		],
